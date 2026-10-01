@@ -114,6 +114,8 @@ textarea:focus-visible {
   width: 38px;
   height: 38px;
   place-items: center;
+  line-height: 1;
+  text-align: center;
   border: 3px solid var(--paper);
   border-radius: 50%;
   background: var(--avatar, #f3bf73);
@@ -1982,19 +1984,19 @@ textarea:focus-visible {
     padding-top: 20px;
   }
 
-  .sidebar-account strong,
-  .sidebar-account span {
+  .sidebar-account > div:not(.avatar) strong,
+  .sidebar-account > div:not(.avatar) span {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .sidebar-account strong {
+  .sidebar-account > div:not(.avatar) strong {
     font-size: 12px;
   }
 
-  .sidebar-account span {
+  .sidebar-account > div:not(.avatar) span {
     margin-top: 2px;
     color: var(--ink-soft);
     font-size: 10px;
@@ -4031,4 +4033,61 @@ body {
     border-radius: 18px 18px 0 0;
     padding: 16px;
   }
+}
+
+.install-app { position: fixed; right: 16px; bottom: max(88px, calc(env(safe-area-inset-bottom) + 72px)); z-index: 100; max-width: min(300px, calc(100vw - 32px)); }
+.install-app-button, .install-app-help button { border: 0; border-radius: 999px; background: #102a56; color: white; padding: 10px 16px; font: inherit; font-weight: 600; cursor: pointer; }
+.install-app-button { float: right; box-shadow: 0 4px 16px #102a5633; }
+.install-app-help { padding: 18px; margin-bottom: 10px; border: 1px solid #dce3ed; border-radius: 16px; background: white; color: #102a56; box-shadow: 0 8px 30px #102a5626; }
+.install-app-help p { margin: 10px 0; font-size: 14px; line-height: 1.5; }
+html.login-keyboard-open .install-app { display: none; }
+
+.delete-expense-modal { width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow-y: auto; margin: auto; padding: 24px; border: 1px solid #dce3ed; border-radius: 24px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 80px #102a5633; }
+.delete-expense-modal::backdrop { background: #102a5680; backdrop-filter: blur(5px); }
+.delete-expense-summary { display: grid; gap: 6px; padding: 16px; border-radius: 14px; background: #f2f5f9; overflow-wrap: anywhere; }
+.delete-expense-summary span, .delete-expense-modal > p { font-size: 14px; line-height: 1.6; }
+.delete-expense-modal > p { margin: 18px 0; }
+.delete-expense-confirm { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 12px 18px; border: 0; border-radius: 12px; background: #b42318; color: white; font: inherit; font-weight: 600; cursor: pointer; }
+.delete-expense-confirm:hover { background: #912018; }
+.delete-expense-modal button:disabled { opacity: .6; cursor: wait; }
+.delete-expense-modal .delete-expense-error { color: #b42318; }
+.delete-expense-modal .modal-actions { margin-bottom: 0; }
+
+.sidebar-account > .sidebar-account-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+/* Delete confirmation: isolated styles keep the compact dialog consistent. */
+.delete-expense-modal { width: min(460px, calc(100vw - 32px)); padding: 28px; border-radius: 22px; border-color: #e4e8ee; box-shadow: 0 28px 90px #102a5638; }
+.delete-expense-modal::backdrop { background: #0c183b66; backdrop-filter: blur(4px); }
+.delete-expense-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.delete-expense-icon { display: grid; place-items: center; width: 52px; height: 52px; border: 1px solid #fee4e2; border-radius: 16px; background: #fff1f0; color: #b42318; }
+.delete-expense-modal .close-button { width: 32px; height: 32px; display: grid; place-items: center; background: transparent; color: #6c7789; border-radius: 8px; }
+.delete-expense-modal .close-button:hover { background: #f2f5f9; }
+.delete-expense-modal h2 { margin: 0; font-size: 24px; font-weight: 750; letter-spacing: -.035em; line-height: 1.25; }
+.delete-expense-modal > p { margin: 12px 0 20px; color: #627086; font-size: 14px; line-height: 1.65; }
+.delete-expense-summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; background: #f7f8fa; border: 1px solid #e7ebf0; border-radius: 12px; }
+.delete-expense-summary > div { display: grid; gap: 5px; min-width: 0; }
+.delete-expense-summary span { color: #627086; font-size: 12px; line-height: 1.4; }
+.delete-expense-summary .delete-expense-label { font-size: 10px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
+.delete-expense-summary strong { font-size: 14px; line-height: 1.5; }
+.delete-expense-summary .delete-expense-amount { flex-shrink: 0; font-size: 18px; font-variant-numeric: tabular-nums; }
+.delete-expense-modal .delete-expense-warning { margin: 14px 0 24px; font-size: 12px; color: #8c5260; }
+.delete-expense-modal .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding-top: 20px; border-top: 1px solid #e7ebf0; }
+.delete-expense-modal .modal-actions button { min-height: 44px; border-radius: 10px; font-size: 13px; font-weight: 650; }
+.delete-expense-modal .secondary-button { background: white; color: var(--ink); border: 1px solid #dce2ea; box-shadow: 0 1px 2px #102a5608; }
+.delete-expense-modal .secondary-button:hover { background: #f7f8fa; }
+.delete-expense-modal button:focus-visible { outline: 3px solid #b3c9eb; outline-offset: 3px; }
+@media (max-width: 480px) {
+  .delete-expense-modal { padding: 22px; }
+  .delete-expense-summary { align-items: flex-start; flex-direction: column; gap: 10px; }
 }

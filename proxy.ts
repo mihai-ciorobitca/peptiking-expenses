@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readSiteAccessToken, SITE_ACCESS_COOKIE, SITE_IDENTITY_HEADER } from "@/lib/site-password";
 
-const PUBLIC_PATHS = new Set(["/login", "/api/site-login", "/api/site-logout"]);
+const PUBLIC_PATHS = new Set(["/login", "/api/site-login", "/api/site-logout", "/manifest.webmanifest", "/sw.js"]);
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

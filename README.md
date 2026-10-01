@@ -11,6 +11,10 @@ npm run dev
 
 Without Supabase environment values, the interface runs in a clearly marked demo mode.
 
+## Install on a phone
+
+Open the deployed app over HTTPS. On Android, tap **Install app** when offered, or choose **Install app / Add to Home screen** from the browser menu. On iPhone, open it in Safari and choose **Share → Add to Home Screen → Add**. The app opens from its home-screen icon in a standalone window, with the same login and team data. Installation is available from the login page as well as the tracker.
+
 ## Connect Supabase
 
 1. Create a Supabase project.

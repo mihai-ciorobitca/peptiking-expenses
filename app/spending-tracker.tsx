@@ -181,12 +181,7 @@ const PAYMENT_ICONS: Record<PaymentMethod, LucideIcon> = {
 };
 
 function initials(name: string) {
-  return name
-    .split(/\s+/)
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  return (Array.from(name.trim())[0] ?? "?").toUpperCase();
 }
 
 function avatarStyle(color: string): CSSProperties {
@@ -548,6 +543,10 @@ export function SpendingTracker() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [proofViewer, setProofViewer] = useState<ProofViewerValue | null>(null);
   const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<Expense | null>(null);
+  const [deletingExpense, setDeletingExpense] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleteInFlightRef = useRef(false);
   const [isOnline, setIsOnline] = useState(true);
   const [offlineCount, setOfflineCount] = useState(0);
   const workspaceSyncingRef = useRef(false);
@@ -898,12 +897,24 @@ export function SpendingTracker() {
     }
   };
 
-  const deleteExpense = async (expenseId: string) => {
-    if (!window.confirm("Delete this expense and its proof? This cannot be undone.")) return;
+  const deleteExpense = (expenseId: string) => {
+    const expense = expenses.find((item) => item.id === expenseId);
+    if (!expense || deleteInFlightRef.current) return;
+    setDeleteError(null);
+    setExpenseToDelete(expense);
+  };
+
+  const confirmDeleteExpense = async () => {
+    if (!expenseToDelete || deleteInFlightRef.current) return;
+    const expenseId = expenseToDelete.id;
+    deleteInFlightRef.current = true;
+    setDeletingExpense(true);
+    setDeleteError(null);
     try {
       if (!configured) {
         setExpenses((current) => current.filter((expense) => expense.id !== expenseId));
         showToast("Expense deleted.");
+        setExpenseToDelete(null);
         return;
       }
       const response = await fetch(`/api/expenses?expenseId=${encodeURIComponent(expenseId)}`, { method: "DELETE" });
@@ -911,8 +922,12 @@ export function SpendingTracker() {
       if (!response.ok) throw new Error(payload.message ?? "Could not delete this expense");
       setExpenses((current) => current.filter((expense) => expense.id !== expenseId));
       showToast("Expense deleted.");
+      setExpenseToDelete(null);
     } catch (error) {
-      showToast(error instanceof Error ? error.message : "Could not delete this expense");
+      setDeleteError(error instanceof Error ? error.message : "Could not delete this expense");
+    } finally {
+      deleteInFlightRef.current = false;
+      setDeletingExpense(false);
     }
   };
 
@@ -1044,9 +1059,45 @@ export function SpendingTracker() {
 
       {proofViewer && <ProofViewer proof={proofViewer} onClose={() => setProofViewer(null)} />}
 
+      {expenseToDelete && <DeleteExpenseModal expense={expenseToDelete} deleting={deletingExpense} error={deleteError} onConfirm={confirmDeleteExpense} onClose={() => { if (!deleteInFlightRef.current) setExpenseToDelete(null); }} />}
+
       {toast && <div className="toast" role="status">{toast}</div>}
     </div>
   );
+}
+
+function DeleteExpenseModal({ expense, deleting, error, onConfirm, onClose }: {
+  expense: Expense;
+  deleting: boolean;
+  error: string | null;
+  onConfirm: () => Promise<void>;
+  onClose: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previousOverflow = document.body.style.overflow;
+    dialog?.showModal();
+    cancelRef.current?.focus();
+    document.body.style.overflow = "hidden";
+    return () => {
+      dialog?.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+  }, []);
+
+  return <dialog ref={dialogRef} className="delete-expense-modal" aria-labelledby="delete-expense-title" aria-describedby="delete-expense-description" aria-busy={deleting} onCancel={(event) => { event.preventDefault(); if (!deleting) onClose(); }}>
+    <div className="delete-expense-header"><span className="delete-expense-icon"><Trash2 size={24} strokeWidth={1.7} aria-hidden="true" /></span><button type="button" className="close-button" disabled={deleting} onClick={onClose} aria-label="Close delete confirmation"><X size={19} aria-hidden="true" /></button></div>
+    <h2 id="delete-expense-title">Delete this expense?</h2>
+    <p id="delete-expense-description">The expense and any attached receipt will be permanently removed from your team’s records.</p>
+    <div className="delete-expense-summary"><div><span className="delete-expense-label">Expense</span><strong>{expense.merchant}</strong><span>{displayDate(expense.spentAt)} · {expense.category}</span></div><strong className="delete-expense-amount">{formatMoney(expense.amount, expense.currency)}</strong></div>
+    <p className="delete-expense-warning">This action cannot be undone.</p>
+    {error && <p className="delete-expense-error" role="alert">{error}</p>}
+    <div className="modal-actions"><button ref={cancelRef} type="button" className="secondary-button" disabled={deleting} onClick={onClose}>Cancel</button><button type="button" className="delete-expense-confirm" disabled={deleting} onClick={() => void onConfirm()}>{!deleting && <Trash2 size={16} aria-hidden="true" />}{deleting ? "Deleting…" : "Delete expense"}</button></div>
+  </dialog>;
 }
 
 function Sidebar({ tab, teamName, member, onNavigate }: {
@@ -1065,7 +1116,7 @@ function Sidebar({ tab, teamName, member, onNavigate }: {
         {member.role === "member" && <NavButton desktop label="Settings" icon={Settings} active={tab === "settings"} onClick={() => onNavigate("settings")} />}
       </nav>
       <div className="sidebar-account">
-        <span className="avatar" style={avatarStyle(member.avatarColor)}>{initials(member.name)}</span>
+        <div className="avatar sidebar-account-avatar" style={avatarStyle(member.avatarColor)} aria-label={`${member.name} avatar`}>{initials(member.name)}</div>
         <div><strong>{member.name}</strong><span>{member.role === "admin" ? "Administrator" : "Team member"} · {teamName}</span><a className="sign-out-link" href="/api/site-logout"><LogOut size={13} strokeWidth={1.9} />Sign out</a></div>
       </div>
     </aside>

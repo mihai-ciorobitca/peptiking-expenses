@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import { InstallApp } from "./install-app";
 import { headers } from "next/headers";
 import "./globals.css";
+
+export const viewport: Viewport = { themeColor: "#102a56" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const requestHeaders = await headers();
@@ -15,12 +18,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: "A fast, mobile-first spending tracker for your whole team.",
     manifest: "/manifest.webmanifest",
+    appleWebApp: { capable: true, title: "Peptiking", statusBarStyle: "default" },
     icons: {
       icon: [
         { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" },
         { url: "/icon.png", sizes: "512x512", type: "image/png" },
       ],
-      apple: [{ url: "/icon.png", sizes: "512x512", type: "image/png" }],
+      apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     },
     openGraph: {
       title: "Peptiking",
@@ -40,7 +44,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>{children}<InstallApp /></body>
     </html>
   );
 }
