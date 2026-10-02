@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { RecurringExpenses } from "./recurring-expenses";
 import { FormEvent, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent } from "react";
 import { createPortal } from "react-dom";
 import { getQueuedExpenses, loadLatestWorkspaceSnapshot, queueExpense, removeQueuedExpense, saveWorkspaceSnapshot, type QueuedExpenseRecord } from "@/lib/offline-expenses";
@@ -1040,6 +1041,8 @@ export function SpendingTracker() {
 
       <BottomNav tab={tab} isAdmin={isAdmin} onNavigate={navigate} onAdd={() => setAddOpen(true)} onRefresh={getUpdate} />
 
+      {!isAdmin && configured && <RecurringExpenses admin={false} configured={configured} members={members} currencies={settings.currencies} categories={settings.categories} />}
+
       {addOpen && !isAdmin && (
         <ExpenseModal
           members={members.filter((member) => (
@@ -1658,6 +1661,7 @@ function AdminView({ configured, members, settings, currentMember, onMembersChan
   return (
     <>
       <div className="tab-header"><div><p className="eyebrow">Workspace control</p><h1>Admin</h1><p className="intro-copy">Manage who can spend and how your team records it.</p></div></div>
+      <RecurringExpenses admin configured={configured} members={members} currencies={settings.currencies} categories={settings.categories} />
       <div className="admin-layout">
         <section className="admin-card">
           <div className="section-head"><div><h2>Team members</h2><p>{members.filter((member) => member.status === "active").length} active profiles</p></div></div>

@@ -15,6 +15,12 @@ Without Supabase environment values, the interface runs in a clearly marked demo
 
 Open the deployed app over HTTPS. On Android, tap **Install app** when offered, or choose **Install app / Add to Home screen** from the browser menu. On iPhone, open it in Safari and choose **Share → Add to Home Screen → Add**. The app opens from its home-screen icon in a standalone window, with the same login and team data. Installation is available from the login page as well as the tracker.
 
+## Recurring expenses
+
+Run `supabase/migrations/20261002084139_recurring_expenses.sql` against the expense app's database before deploying this feature (including fresh installations after `schema.sql`). Admin → Recurring expenses lets an admin create a monthly subscription, assign an active member, set the renewal day and first renewal date, and choose a reminder 1, 3, or 7 days before renewal. Admins can pause and resume schedules.
+
+The assigned member receives a required confirmation modal when opening the app during the reminder window. Escape does not dismiss it; refreshing or signing in on another device keeps it pending. “Still active” records confirmation for that renewal; “No longer active” pauses the subscription. The next monthly check is prepared when the app is opened after the confirmed renewal date. Unanswered checks stay overdue rather than being skipped. Days 29–31 use the last day of shorter months, then return to the original renewal day. Dates use Asia/Bangkok. These are in-app reminders; no background notifications or automatic payment records are created. Record the actual payment separately with its proof.
+
 ## Connect Supabase
 
 1. Create a Supabase project.

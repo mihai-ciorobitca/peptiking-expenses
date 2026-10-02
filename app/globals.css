@@ -4091,3 +4091,18 @@ html.login-keyboard-open .install-app { display: none; }
   .delete-expense-modal { padding: 22px; }
   .delete-expense-summary { align-items: flex-start; flex-direction: column; gap: 10px; }
 }
+
+.recurring-panel { padding: 24px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); }
+.recurring-panel .section-head { gap: 16px; flex-wrap: wrap; }
+.recurring-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0; }
+.recurring-form label { display: grid; gap: 8px; font-size: 13px; font-weight: 600; }
+.recurring-form input, .recurring-form select { width: 100%; min-width: 0; padding: 12px; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; background: white; color: var(--ink); }
+.recurring-form > p { grid-column: 1 / -1; font-size: 12px; line-height: 1.6; }
+.recurring-list { display: grid; gap: 12px; margin-top: 20px; }
+.recurring-item { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1px solid var(--line); border-radius: 14px; }
+.recurring-item > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.recurring-item p, .recurring-item small { font-size: 12px; color: var(--ink-soft); line-height: 1.6; }
+.subscription-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: #edf3fb; color: #102a56; }
+.subscription-badge { color: #627086; font-size: 12px; }
+.subscription-confirm .modal-actions button { white-space: normal; }
+@media (max-width: 600px) { .recurring-panel { padding: 18px; } .recurring-form { grid-template-columns: 1fr; } .recurring-item { flex-wrap: wrap; } }
