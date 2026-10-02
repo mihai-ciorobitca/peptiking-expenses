@@ -4111,3 +4111,29 @@ html.login-keyboard-open .install-app { display: none; }
 .install-app-controls .install-app-button { float: none; box-shadow: none; }
 .install-app-dismiss { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: white; cursor: pointer; }
 .install-app-dismiss:hover { background: #ffffff26; }
+
+/* Keep the ledger controls visible; only its rows scroll. */
+.expenses-screen { height: 100dvh; min-height: 0; overflow: hidden; }
+.expenses-screen .main-canvas { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; padding-top: 20px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+.expenses-screen .main-canvas > :not(.expenses-view) { flex-shrink: 0; }
+.expenses-view { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.expenses-view > .tab-header, .expenses-view > .search-box, .expenses-view > .filter-row { flex-shrink: 0; }
+.expenses-view .tab-header { margin-bottom: 16px; }
+.expenses-view .filter-row { margin-bottom: 16px; }
+.expenses-view > .expense-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; margin: 0; }
+.expenses-view .expense-panel > .section-head, .expenses-view .ledger-currency-breakdown { flex-shrink: 0; }
+.expenses-view .expense-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; align-content: start; padding-right: 8px; }
+.expenses-view .expense-panel > .empty-state { flex: 1; min-height: 0; }
+@media (min-width: 1040px) {
+  .expenses-screen .sidebar { height: 100dvh; min-height: 0; }
+  .expenses-screen .main-canvas { padding-top: 24px; padding-bottom: 24px; }
+}
+@media (max-width: 699px), (max-height: 700px) {
+  .expenses-view .tab-header h1 { font-size: 30px; }
+  .expenses-view .tab-header .intro-copy { display: none; }
+  .expenses-view .tab-header .eyebrow { margin-bottom: 6px; }
+  .expenses-view .expense-panel { padding: 16px; }
+  .expenses-view .ledger-currency-breakdown { margin-bottom: 12px; }
+  .expenses-view .ledger-currency-breakdown > span { padding: 8px 10px; }
+  .expenses-screen .mobile-topbar { margin-bottom: 12px; }
+}

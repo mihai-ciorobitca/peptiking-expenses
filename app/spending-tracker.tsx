@@ -963,7 +963,7 @@ export function SpendingTracker() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${tab === "activity" ? " expenses-screen" : ""}`}>
       <Sidebar
         tab={tab}
         teamName={settings.teamName}
@@ -1297,7 +1297,7 @@ function ActivityView({ expenses, members, settings, search, categoryFilter, onS
 }) {
   const totals = getCurrencyTotals(expenses);
   return (
-    <>
+    <div className="expenses-view">
       <div className="tab-header">
         <div><p className="eyebrow">Team ledger</p><h1>Expenses</h1><p className="intro-copy">Every payment, person, and proof in one place.</p></div>
         {currentMember.role === "member" && <button className="primary-button desktop-add" onClick={onAdd}><Plus size={17} aria-hidden="true" />Add expense</button>}
@@ -1314,7 +1314,7 @@ function ActivityView({ expenses, members, settings, search, categoryFilter, onS
         </div>
         <ExpenseList expenses={expenses} members={members} settings={settings} currentMember={currentMember} onReportExpense={onReportExpense} onDeleteExpense={onDeleteExpense} onEditExpense={onEditExpense} onViewProof={onViewProof} />
       </section>
-    </>
+    </div>
   );
 }
 
