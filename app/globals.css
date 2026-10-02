@@ -4106,3 +4106,8 @@ html.login-keyboard-open .install-app { display: none; }
 .subscription-badge { color: #627086; font-size: 12px; }
 .subscription-confirm .modal-actions button { white-space: normal; }
 @media (max-width: 600px) { .recurring-panel { padding: 18px; } .recurring-form { grid-template-columns: 1fr; } .recurring-item { flex-wrap: wrap; } }
+
+.install-app-controls { display: flex; align-items: center; gap: 4px; padding-right: 6px; border-radius: 999px; background: #102a56; box-shadow: 0 4px 16px #102a5633; }
+.install-app-controls .install-app-button { float: none; box-shadow: none; }
+.install-app-dismiss { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: white; cursor: pointer; }
+.install-app-dismiss:hover { background: #ffffff26; }

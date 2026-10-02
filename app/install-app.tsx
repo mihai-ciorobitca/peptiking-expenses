@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { X } from "lucide-react";
+
+const DISMISS_EVENT = "peptiking-install-dismissed";
+function subscribeDismissal(callback: () => void) {
+  window.addEventListener(DISMISS_EVENT, callback);
+  return () => window.removeEventListener(DISMISS_EVENT, callback);
+}
+function dismissalSnapshot() {
+  try { return sessionStorage.getItem(DISMISS_EVENT) === "1"; } catch { return false; }
+}
 
 interface InstallPrompt extends Event {
   prompt(): Promise<void>;
@@ -27,6 +37,15 @@ export function InstallApp() {
   const standalone = useSyncExternalStore(subscribeDisplayMode, standaloneSnapshot, serverSnapshot);
   const [instructions, setInstructions] = useState(false);
   const [installed, setInstalled] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+  const sessionDismissed = useSyncExternalStore(subscribeDismissal, dismissalSnapshot, serverSnapshot);
+
+  function dismiss() {
+    setDismissed(true);
+    setInstructions(false);
+    try { sessionStorage.setItem(DISMISS_EVENT, "1"); } catch { /* Dismiss still works when storage is unavailable. */ }
+    window.dispatchEvent(new Event(DISMISS_EVENT));
+  }
 
   useEffect(() => {
     const onPrompt = (event: Event) => {
@@ -56,7 +75,7 @@ export function InstallApp() {
     }
   }
 
-  if (installed || standalone || (!prompt && !ios && !instructions)) return null;
+  if (dismissed || sessionDismissed || installed || standalone || (!prompt && !ios && !instructions)) return null;
   return (
     <aside className="install-app" aria-label="Install Peptiking">
       {instructions && <div className="install-app-help" id="install-app-help" role="status">
@@ -64,7 +83,10 @@ export function InstallApp() {
         <p>{ios ? "Open this page in Safari. Tap Share, then Add to Home Screen, then Add." : "Open the browser menu and choose Install app or Add to Home screen."}</p>
         <button type="button" onClick={() => setInstructions(false)}>Close</button>
       </div>}
-      <button className="install-app-button" type="button" onClick={() => void install().catch(() => setInstructions(true))} aria-expanded={ios ? instructions : undefined} aria-controls={ios ? "install-app-help" : undefined}>Install app</button>
+      <div className="install-app-controls">
+        <button className="install-app-button" type="button" onClick={() => void install().catch(() => setInstructions(true))} aria-expanded={ios ? instructions : undefined} aria-controls={ios ? "install-app-help" : undefined}>Install app</button>
+        <button className="install-app-dismiss" type="button" onClick={dismiss} aria-label="Dismiss install app suggestion"><X size={16} aria-hidden="true" /></button>
+      </div>
     </aside>
   );
 }
